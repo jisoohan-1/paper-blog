@@ -7,12 +7,10 @@ reading-time: true
 toc: true
 jupyter: python3
 execute:
-  enabled: false             # 코드를 실행하지 않음(표시만) → jupyter 설치 불필요.
-                             # 코드를 실제 실행하려면 이 줄을 true 로 바꾸고
-                             # 로컬에 `pip install jupyter` 하세요.
+  enabled: false
 ---
 
-::: callout-note
+::: {.callout-note}
 ## Paper info.
 
 Vaswani, Ashish, et al. "Attention is all you need." *Advances in neural information processing systems* 30 (2017). [arXiv:1706.03762](https://arxiv.org/abs/1706.03762)
