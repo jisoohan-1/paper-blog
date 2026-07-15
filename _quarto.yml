@@ -1,0 +1,43 @@
+project:
+  type: website
+  output-dir: _site
+
+website:
+  title: "Paper Notes"
+  description: "인공지능 논문을 읽고 정리하는 공간"
+  site-url: "https://jisoohan-1.github.io/paper-blog" # 배포 후 본인 주소로 수정
+  navbar:
+    left:
+      - href: index.qmd
+        text: Home
+      - href: about.qmd
+        text: About
+    right:
+      - icon: github
+        href: https://github.com/USERNAME/paper-blog # 본인 repo로 수정
+  page-footer:
+    center: "© 2026 · Built with Quarto"
+
+format:
+  html:
+    theme:
+      light: cosmo
+      dark: darkly
+    css: styles.css
+    toc: true
+    toc-depth: 3
+    toc-title: "목차"
+    code-fold: false
+    code-tools: true
+    code-copy: true
+    highlight-style: github
+    html-math-method: katex # 수식 렌더링: KaTeX (빠름)
+    mermaid:
+      theme: neutral # Mermaid 도식 테마
+    fig-cap-location: bottom
+    number-sections: false
+    link-external-newwindow: true
+
+# 참고문헌을 쓰고 싶을 때 (references.bib 파일 필요)
+# bibliography: references.bib
+# csl: ieee.csl

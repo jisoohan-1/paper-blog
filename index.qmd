@@ -1,0 +1,16 @@
+---
+title: "Paper Notes"
+subtitle: "인공지능 논문을 읽고 정리하는 공간"
+listing:
+  contents: posts          # posts/ 폴더의 글을 자동으로 목록화
+  sort: "date desc"        # 최신순 정렬
+  type: default            # default / grid / table 중 선택
+  categories: true         # 카테고리(태그) 사이드바 표시
+  sort-ui: true            # 정렬 UI 표시
+  filter-ui: true          # 검색/필터 UI 표시
+  fields: [date, title, reading-time, description, categories]
+page-layout: full
+title-block-banner: true
+---
+
+읽은 논문들을 여기에 하나씩 정리합니다. 아래 목록에서 골라 읽어보세요.

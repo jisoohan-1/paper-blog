@@ -1,0 +1,22 @@
+/* 본문 가독성 */
+.quarto-title-block .description {
+  font-size: 1.05rem;
+  color: #666;
+}
+
+/* 코드 블록 여백 살짝 */
+div.sourceCode {
+  border-radius: 8px;
+}
+
+/* 목록형 홈에서 카테고리 뱃지 강조 */
+.quarto-category {
+  font-size: 0.8rem;
+}
+
+/* 수식이 길 때 가로 스크롤 허용 */
+.katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.25rem 0;
+}
