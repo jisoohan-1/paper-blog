@@ -20,3 +20,58 @@ div.sourceCode {
   overflow-y: hidden;
   padding: 0.25rem 0;
 }
+
+/* ===== 본문을 카드처럼 배경과 분리 ===== */
+
+/* 페이지 바닥에 은은한 배경색 */
+body {
+  background-color: #f4f5f7;
+}
+
+/* 본문 글 영역을 흰 카드로 */
+main.content {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 2.5rem 3rem;
+  margin-top: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+/* 다크 모드에서도 자연스럽게 */
+.quarto-dark body {
+  background-color: #14161a;
+  /* 바닥: 더 어둡게 */
+}
+
+.quarto-dark main.content {
+  background-color: #24272e;
+  /* 카드: 바닥보다 밝게 → 분리감 */
+  border-color: #3a3f47;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* 다크 모드 목차(TOC) 가독성 */
+.quarto-dark #TOC,
+.quarto-dark .sidebar nav[role="doc-toc"] {
+  color: #9aa2ad;
+}
+
+.quarto-dark #TOC a,
+.quarto-dark nav[role="doc-toc"] a {
+  color: #9aa2ad;
+}
+
+.quarto-dark #TOC a:hover,
+.quarto-dark nav[role="doc-toc"] a.active {
+  color: #4da3ff;
+}
+
+/* 좁은 화면(모바일)에서는 여백 줄이기 */
+@media (max-width: 768px) {
+  main.content {
+    padding: 1.5rem 1.25rem;
+    border-radius: 8px;
+  }
+}

@@ -14,7 +14,7 @@ website:
         text: About
     right:
       - icon: github
-        href: https://github.com/USERNAME/paper-blog # 본인 repo로 수정
+        href: https://github.com/jisoohan-1/paper-blog # 본인 repo로 수정
   page-footer:
     center: "© 2026 · Built with Quarto"
 

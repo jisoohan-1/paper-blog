@@ -1,7 +1,5 @@
 ---
 title: "Paper Review: Attention Is All You Need"
-description: "Transformer 아키텍처를 제안한 논문 리뷰. Self-attention의 수식과 구조를 정리한다."
-date: "2026-07-15"
 categories: [Transformer, NLP, Architecture]
 reading-time: true
 toc: true

@@ -4,7 +4,7 @@
     "href": "about.html",
     "title": "About",
     "section": "",
-    "text": "인공지능 논문을 읽고 정리하는 블로그입니다.\n주로 다루는 주제:\n\n딥러닝 / 머신러닝 기초 이론\n대규모 언어 모델 (LLM)\n논문 재현 및 구현 노트\n\n읽은 논문을 제 언어로 다시 설명해보며 이해를 다지는 것을 목표로 합니다."
+    "text": "Organize research papers, concepts in artificial intelligence.\nThe main topics I cover include:\n\nDeep Learning & Machine Learning Fundamentals\nLarge Language Models (LLMs)\nPaper Reproductions & Implementation Notes\n\nMy goal is to deepen my understanding by explaining each paper in my own words."
   },
   {
     "objectID": "posts/2026-07-15-attention-is-all-you-need.html",
@@ -74,7 +74,7 @@
     "href": "index.html",
     "title": "Paper Notes",
     "section": "",
-    "text": "Order By\n      Default\n      \n        Title\n      \n      \n        Date - Oldest\n      \n      \n        Date - Newest\n      \n    \n  \n    \n      \n      \n    \n\n\n\n\n\nPaper Review: Attention Is All You Need\n\n\n\nTransformer\n\nNLP\n\nArchitecture\n\n\n\nTransformer 아키텍처를 제안한 논문 리뷰. Self-attention의 수식과 구조를 정리한다.\n\n\n\n\n\nJul 15, 2026\n\n1 min\n\n\n\n\nNo matching items"
+    "text": "Order By\n      Default\n      \n        Title\n      \n      \n        Date - Oldest\n      \n      \n        Date - Newest\n      \n    \n  \n    \n      \n      \n    \n\n\n\n\n\nPaper Review: Attention Is All You Need\n\n\n\nTransformer\n\nNLP\n\nArchitecture\n\n\n\n\n\n\n\n\n1 min\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "posts/2026-07-15-attention-is-all-you-need.html#key-takeaway",
