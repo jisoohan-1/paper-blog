@@ -4,7 +4,7 @@ project:
 
 website:
   title: "Paper Notes"
-  description: "인공지능 논문을 읽고 정리하는 공간"
+  description: "AI&ML concepts, paper reviews"
   site-url: "https://jisoohan-1.github.io/paper-blog" # 배포 후 본인 주소로 수정
   navbar:
     left:
