@@ -6,11 +6,10 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="본인 이름">
 <meta name="dcterms.date" content="2026-07-15">
 <meta name="description" content="Transformer 아키텍처를 제안한 논문 리뷰. Self-attention의 수식과 구조를 정리한다.">
 
-<title>Attention Is All You Need 정리 – Paper Notes</title>
+<title>Paper Review: Attention Is All You Need – Paper Notes</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -112,10 +111,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-label": "Search"
   }
 }</script>
-<meta name="mermaid-theme" content="neutral">
-<script src="../site_libs/quarto-diagram/mermaid.min.js"></script>
-<script src="../site_libs/quarto-diagram/mermaid-init.js"></script>
-<link href="../site_libs/quarto-diagram/mermaid.css" rel="stylesheet">
 
   <script>window.backupDefine = window.define; window.define = undefined;</script><script src="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script>
   <script>document.addEventListener("DOMContentLoaded", function () {
@@ -375,13 +370,11 @@ window.Quarto = {
     <h2 id="toc-title">목차</h2>
    
   <ul>
-  <li><a href="#한-줄-요약" id="toc-한-줄-요약" class="nav-link active" data-scroll-target="#한-줄-요약">한 줄 요약</a></li>
-  <li><a href="#문제-상황" id="toc-문제-상황" class="nav-link" data-scroll-target="#문제-상황">문제 상황</a></li>
-  <li><a href="#핵심-아이디어-scaled-dot-product-attention" id="toc-핵심-아이디어-scaled-dot-product-attention" class="nav-link" data-scroll-target="#핵심-아이디어-scaled-dot-product-attention">핵심 아이디어: Scaled Dot-Product Attention</a></li>
-  <li><a href="#전체-구조" id="toc-전체-구조" class="nav-link" data-scroll-target="#전체-구조">전체 구조</a></li>
-  <li><a href="#구현으로-확인하기" id="toc-구현으로-확인하기" class="nav-link" data-scroll-target="#구현으로-확인하기">구현으로 확인하기</a></li>
-  <li><a href="#결과-및-의의" id="toc-결과-및-의의" class="nav-link" data-scroll-target="#결과-및-의의">결과 및 의의</a></li>
-  <li><a href="#내-생각-남은-질문" id="toc-내-생각-남은-질문" class="nav-link" data-scroll-target="#내-생각-남은-질문">내 생각 / 남은 질문</a></li>
+  <li><a href="#key-takeaway" id="toc-key-takeaway" class="nav-link active" data-scroll-target="#key-takeaway">Key Takeaway</a></li>
+  <li><a href="#problem-settings" id="toc-problem-settings" class="nav-link" data-scroll-target="#problem-settings">Problem settings</a></li>
+  <li><a href="#core-idea-scaled-dot-product-attention" id="toc-core-idea-scaled-dot-product-attention" class="nav-link" data-scroll-target="#core-idea-scaled-dot-product-attention">Core Idea: Scaled Dot-Product Attention</a></li>
+  <li><a href="#conclusion-contribution" id="toc-conclusion-contribution" class="nav-link" data-scroll-target="#conclusion-contribution">Conclusion &amp; Contribution</a></li>
+  <li><a href="#personal-thoughts" id="toc-personal-thoughts" class="nav-link" data-scroll-target="#personal-thoughts">Personal Thoughts</a></li>
   </ul>
 </nav>
     </div>
@@ -391,11 +384,11 @@ window.Quarto = {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<div class="quarto-title-block"><div><h1 class="title">Attention Is All You Need 정리</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
+<div class="quarto-title-block"><div><h1 class="title">Paper Review: Attention Is All You Need</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
   <div class="quarto-categories">
     <div class="quarto-category">Transformer</div>
     <div class="quarto-category">NLP</div>
-    <div class="quarto-category">아키텍처</div>
+    <div class="quarto-category">Architecture</div>
   </div>
   </div>
 
@@ -408,12 +401,6 @@ window.Quarto = {
 
 <div class="quarto-title-meta">
 
-    <div>
-    <div class="quarto-title-meta-heading">Author</div>
-    <div class="quarto-title-meta-contents">
-             <p>본인 이름 </p>
-          </div>
-  </div>
     
     <div>
     <div class="quarto-title-meta-heading">Published</div>
@@ -430,145 +417,57 @@ window.Quarto = {
 </header>
 
 
-<section id="한-줄-요약" class="level2">
-<h2 class="anchored" data-anchor-id="한-줄-요약">한 줄 요약</h2>
-<p>RNN·CNN 없이 <strong>오직 attention 만으로</strong> 시퀀스를 처리하는 Transformer를 제안한 논문. 병렬화가 쉬워 학습이 빠르고, 장거리 의존성을 잘 잡는다.</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>서지 정보
+<span class="screen-reader-only">Note</span>Paper info.
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Vaswani et al., “Attention Is All You Need”, NeurIPS 2017. <a href="https://arxiv.org/abs/1706.03762">arXiv:1706.03762</a></p>
+<p>Vaswani, Ashish, et al.&nbsp;“Attention is all you need.” <em>Advances in neural information processing systems</em> 30 (2017). <a href="https://arxiv.org/abs/1706.03762">arXiv:1706.03762</a></p>
 </div>
 </div>
+<section id="key-takeaway" class="level2">
+<h2 class="anchored" data-anchor-id="key-takeaway">Key Takeaway</h2>
+<p>RNN·CNN 없이 <strong>오직 attention 만으로</strong> 시퀀스를 처리하는 Transformer를 제안한 논문. 병렬화가 쉬워 학습이 빠르고, 장거리 의존성을 잘 잡는다.</p>
 </section>
-<section id="문제-상황" class="level2">
-<h2 class="anchored" data-anchor-id="문제-상황">문제 상황</h2>
+<section id="problem-settings" class="level2">
+<h2 class="anchored" data-anchor-id="problem-settings">Problem settings</h2>
 <p>기존 seq2seq 모델은 RNN 계열을 써서 토큰을 <strong>순차적으로</strong> 처리했다. 이 때문에</p>
 <ol type="1">
 <li>시퀀스 길이에 비례해 계산이 직렬화되어 병렬화가 어렵고,</li>
-<li>멀리 떨어진 토큰 사이의 의존성을 학습하기 어렵다<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>.</li>
+<li>멀리 떨어진 토큰 사이의 의존성을 학습하기 어렵다.</li>
 </ol>
 </section>
-<section id="핵심-아이디어-scaled-dot-product-attention" class="level2">
-<h2 class="anchored" data-anchor-id="핵심-아이디어-scaled-dot-product-attention">핵심 아이디어: Scaled Dot-Product Attention</h2>
+<section id="core-idea-scaled-dot-product-attention" class="level2">
+<h2 class="anchored" data-anchor-id="core-idea-scaled-dot-product-attention">Core Idea: Scaled Dot-Product Attention</h2>
 <p>Query <span class="math inline">Q</span>, Key <span class="math inline">K</span>, Value <span class="math inline">V</span> 행렬에 대해 attention 은 다음과 같이 정의된다.</p>
-<p><span class="math display">
-\text{Attention}(Q, K, V) = \text{softmax}\!\left(\frac{QK^\top}{\sqrt{d_k}}\right)V
-</span></p>
+<p><span class="math display">\text{Attention}(Q, K, V) = \text{softmax}\!\left(\frac{QK^\top}{\sqrt{d_k}}\right)V</span></p>
 <p>여기서 <span class="math inline">\sqrt{d_k}</span> 로 나누는 것이 핵심인데, <span class="math inline">d_k</span> 가 커질수록 내적 값의 분산이 커져 softmax 가 포화(gradient 소실)되는 것을 막아준다.</p>
 <p>Multi-head attention 은 이를 <span class="math inline">h</span> 개의 독립된 부분공간에서 병렬로 수행한다.</p>
-<p><span class="math display">
-\text{MultiHead}(Q,K,V) = \text{Concat}(\text{head}_1, \dots, \text{head}_h)\,W^O
-</span></p>
-<p><span class="math display">
-\text{where}\quad \text{head}_i = \text{Attention}(QW_i^Q,\, KW_i^K,\, VW_i^V)
-</span></p>
+<p><span class="math display">\text{MultiHead}(Q,K,V) = \text{Concat}(\text{head}_1, \dots, \text{head}_h)\,W^O</span></p>
+<p><span class="math display">\text{where}\quad \text{head}_i = \text{Attention}(QW_i^Q,\, KW_i^K,\, VW_i^V)</span></p>
 </section>
-<section id="전체-구조" class="level2">
-<h2 class="anchored" data-anchor-id="전체-구조">전체 구조</h2>
-<p>인코더-디코더 구조를 도식으로 정리하면 다음과 같다.</p>
-<div class="cell" data-layout-align="default">
-<div class="cell-output-display">
-<div>
-<p></p><figure class="figure"><p></p>
-<div>
-<pre class="mermaid mermaid-js">flowchart TB
-    subgraph Encoder
-        E1[Input Embedding] --&gt; E2[+ Positional Encoding]
-        E2 --&gt; E3[Multi-Head Attention]
-        E3 --&gt; E4[Add &amp; Norm]
-        E4 --&gt; E5[Feed Forward]
-        E5 --&gt; E6[Add &amp; Norm]
-    end
-    subgraph Decoder
-        D1[Output Embedding] --&gt; D2[+ Positional Encoding]
-        D2 --&gt; D3[Masked Multi-Head Attention]
-        D3 --&gt; D4[Add &amp; Norm]
-        D4 --&gt; D5[Cross Attention]
-        D5 --&gt; D6[Add &amp; Norm]
-        D6 --&gt; D7[Feed Forward]
-        D7 --&gt; D8[Add &amp; Norm]
-    end
-    E6 --&gt; D5
-    D8 --&gt; O[Linear + Softmax]
-</pre>
-</div>
-<p></p></figure><p></p>
-</div>
-</div>
-</div>
-</section>
-<section id="구현으로-확인하기" class="level2">
-<h2 class="anchored" data-anchor-id="구현으로-확인하기">구현으로 확인하기</h2>
-<p>수식을 코드로 옮겨보면 이해가 확실해진다. Scaled dot-product attention 을 직접 구현해보자.</p>
-<div id="0648e997" class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torch</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torch.nn.functional <span class="im">as</span> F</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> scaled_dot_product_attention(Q, K, V, mask<span class="op">=</span><span class="va">None</span>):</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    d_k <span class="op">=</span> Q.size(<span class="op">-</span><span class="dv">1</span>)</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    scores <span class="op">=</span> Q <span class="op">@</span> K.transpose(<span class="op">-</span><span class="dv">2</span>, <span class="op">-</span><span class="dv">1</span>) <span class="op">/</span> (d_k <span class="op">**</span> <span class="fl">0.5</span>)</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> mask <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>:</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>        scores <span class="op">=</span> scores.masked_fill(mask <span class="op">==</span> <span class="dv">0</span>, <span class="bu">float</span>(<span class="st">"-inf"</span>))</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    weights <span class="op">=</span> F.softmax(scores, dim<span class="op">=-</span><span class="dv">1</span>)</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> weights <span class="op">@</span> V, weights</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Tip
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p><code>#| eval: false</code> 로 두면 코드를 <strong>실행하지 않고 표시만</strong> 한다. <code>true</code> 로 바꾸면 Quarto 가 렌더링 시 실제로 실행해서 출력·그래프까지 글에 넣어준다. 논문 재현 노트를 쓸 때 강력하다.</p>
-</div>
-</div>
-</section>
-<section id="결과-및-의의" class="level2">
-<h2 class="anchored" data-anchor-id="결과-및-의의">결과 및 의의</h2>
+<section id="conclusion-contribution" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion-contribution">Conclusion &amp; Contribution</h2>
 <p>WMT 2014 영어-독일어 번역에서 당시 SOTA 를 갱신했고, 학습 시간도 크게 줄였다. 이후 BERT, GPT 등 거의 모든 현대 LLM 의 근간이 되었다.</p>
 </section>
-<section id="내-생각-남은-질문" class="level2">
-<h2 class="anchored" data-anchor-id="내-생각-남은-질문">내 생각 / 남은 질문</h2>
+<section id="personal-thoughts" class="level2">
+<h2 class="anchored" data-anchor-id="personal-thoughts">Personal Thoughts</h2>
 <ul>
 <li>Positional encoding 을 sinusoidal 대신 learned 로 바꾸면 성능 차이가 얼마나 날까?</li>
 <li><span class="math inline">\sqrt{d_k}</span> scaling 없이 layer norm 만으로 포화를 막을 수 있을지 실험해보고 싶다.</li>
 </ul>
-<div class="callout callout-style-default callout-important callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Important
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>다음에 읽을 것: BERT (Devlin et al., 2018) — 이 구조에서 인코더만 떼어내 어떻게 활용했는지.</p>
-</div>
-</div>
 
 
 <!-- -->
 
 </section>
 
-
-<div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
-
-<ol>
-<li id="fn1"><p>정보가 여러 스텝을 거치며 희석되기 때문. LSTM/GRU가 이를 완화했지만 근본적으로 해결하진 못했다.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-</ol>
-</section></div></main> <!-- /main -->
+</main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     // Ensure there is a toggle, if there isn't float one in the top right
@@ -706,7 +605,7 @@ Important
     }
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);
-        var filterRegex = new RegExp("https:\/\/USERNAME\.github\.io\/paper-blog");
+        var filterRegex = new RegExp("https:\/\/jisoohan-1\.github\.io\/paper-blog");
       var isInternal = (href) => {
           return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
       }
@@ -1038,122 +937,59 @@ Important
     }
   });
   </script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "Attention Is All You Need 정리"</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="an">description:</span><span class="co"> "Transformer 아키텍처를 제안한 논문 리뷰. Self-attention의 수식과 구조를 정리한다."</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="an">author:</span><span class="co"> "본인 이름"</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="an">date:</span><span class="co"> "2026-07-15"</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="an">categories:</span><span class="co"> [Transformer, NLP, 아키텍처]</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="an">image:</span><span class="co"> ""                    # 썸네일 이미지 경로 (선택)</span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="an">reading-time:</span><span class="co"> true</span></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="an">toc:</span><span class="co"> true</span></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="an">jupyter:</span><span class="co"> python3</span></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="an">execute:</span></span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="co">  enabled: false             # 코드를 실행하지 않음(표시만) → jupyter 설치 불필요.</span></span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="co">                             # 코드를 실제 실행하려면 이 줄을 true 로 바꾸고</span></span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="co">                             # 로컬에 `pip install jupyter` 하세요.</span></span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="fu">## 한 줄 요약</span></span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>RNN·CNN 없이 **오직 attention 만으로** 시퀀스를 처리하는 Transformer를 제안한 논문. 병렬화가 쉬워 학습이 빠르고, 장거리 의존성을 잘 잡는다.</span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>::: {.callout-note}</span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="fu">## 서지 정보</span></span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>Vaswani et al., "Attention Is All You Need", NeurIPS 2017. <span class="co">[</span><span class="ot">arXiv:1706.03762</span><span class="co">](https://arxiv.org/abs/1706.03762)</span></span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a><span class="fu">## 문제 상황</span></span>
-<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>기존 seq2seq 모델은 RNN 계열을 써서 토큰을 **순차적으로** 처리했다. 이 때문에</span>
-<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>시퀀스 길이에 비례해 계산이 직렬화되어 병렬화가 어렵고,</span>
-<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>멀리 떨어진 토큰 사이의 의존성을 학습하기 어렵다<span class="ot">[^longdep]</span>.</span>
-<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a><span class="ot">[^longdep]: </span>정보가 여러 스텝을 거치며 희석되기 때문. LSTM/GRU가 이를 완화했지만 근본적으로 해결하진 못했다.</span>
-<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a><span class="fu">## 핵심 아이디어: Scaled Dot-Product Attention</span></span>
-<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>Query $Q$, Key $K$, Value $V$ 행렬에 대해 attention 은 다음과 같이 정의된다.</span>
-<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>\text{Attention}(Q, K, V) = \text{softmax}<span class="sc">\!</span>\left(\frac{QK^\top}{\sqrt{d_k}}\right)V</span>
-<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>여기서 $\sqrt{d_k}$ 로 나누는 것이 핵심인데, $d_k$ 가 커질수록 내적 값의 분산이 커져 softmax 가 포화(gradient 소실)되는 것을 막아준다.</span>
-<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>Multi-head attention 은 이를 $h$ 개의 독립된 부분공간에서 병렬로 수행한다.</span>
-<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a>\text{MultiHead}(Q,K,V) = \text{Concat}(\text{head}_1, \dots, \text{head}_h)\,W^O</span>
-<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a>\text{where}\quad \text{head}_i = \text{Attention}(QW_i^Q,\, KW_i^K,\, VW_i^V)</span>
-<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a><span class="fu">## 전체 구조</span></span>
-<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-57"><a href="#cb2-57" aria-hidden="true" tabindex="-1"></a>인코더-디코더 구조를 도식으로 정리하면 다음과 같다.</span>
-<span id="cb2-58"><a href="#cb2-58" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-61"><a href="#cb2-61" aria-hidden="true" tabindex="-1"></a><span class="in">```{mermaid}</span></span>
-<span id="cb2-62"><a href="#cb2-62" aria-hidden="true" tabindex="-1"></a>flowchart TB</span>
-<span id="cb2-63"><a href="#cb2-63" aria-hidden="true" tabindex="-1"></a>    subgraph Encoder</span>
-<span id="cb2-64"><a href="#cb2-64" aria-hidden="true" tabindex="-1"></a>        E1[Input Embedding] --&gt; E2[+ Positional Encoding]</span>
-<span id="cb2-65"><a href="#cb2-65" aria-hidden="true" tabindex="-1"></a>        E2 --&gt; E3[Multi-Head Attention]</span>
-<span id="cb2-66"><a href="#cb2-66" aria-hidden="true" tabindex="-1"></a>        E3 --&gt; E4[Add &amp; Norm]</span>
-<span id="cb2-67"><a href="#cb2-67" aria-hidden="true" tabindex="-1"></a>        E4 --&gt; E5[Feed Forward]</span>
-<span id="cb2-68"><a href="#cb2-68" aria-hidden="true" tabindex="-1"></a>        E5 --&gt; E6[Add &amp; Norm]</span>
-<span id="cb2-69"><a href="#cb2-69" aria-hidden="true" tabindex="-1"></a>    end</span>
-<span id="cb2-70"><a href="#cb2-70" aria-hidden="true" tabindex="-1"></a>    subgraph Decoder</span>
-<span id="cb2-71"><a href="#cb2-71" aria-hidden="true" tabindex="-1"></a>        D1[Output Embedding] --&gt; D2[+ Positional Encoding]</span>
-<span id="cb2-72"><a href="#cb2-72" aria-hidden="true" tabindex="-1"></a>        D2 --&gt; D3[Masked Multi-Head Attention]</span>
-<span id="cb2-73"><a href="#cb2-73" aria-hidden="true" tabindex="-1"></a>        D3 --&gt; D4[Add &amp; Norm]</span>
-<span id="cb2-74"><a href="#cb2-74" aria-hidden="true" tabindex="-1"></a>        D4 --&gt; D5[Cross Attention]</span>
-<span id="cb2-75"><a href="#cb2-75" aria-hidden="true" tabindex="-1"></a>        D5 --&gt; D6[Add &amp; Norm]</span>
-<span id="cb2-76"><a href="#cb2-76" aria-hidden="true" tabindex="-1"></a>        D6 --&gt; D7[Feed Forward]</span>
-<span id="cb2-77"><a href="#cb2-77" aria-hidden="true" tabindex="-1"></a>        D7 --&gt; D8[Add &amp; Norm]</span>
-<span id="cb2-78"><a href="#cb2-78" aria-hidden="true" tabindex="-1"></a>    end</span>
-<span id="cb2-79"><a href="#cb2-79" aria-hidden="true" tabindex="-1"></a>    E6 --&gt; D5</span>
-<span id="cb2-80"><a href="#cb2-80" aria-hidden="true" tabindex="-1"></a>    D8 --&gt; O[Linear + Softmax]</span>
-<span id="cb2-81"><a href="#cb2-81" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb2-82"><a href="#cb2-82" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-83"><a href="#cb2-83" aria-hidden="true" tabindex="-1"></a><span class="fu">## 구현으로 확인하기</span></span>
-<span id="cb2-84"><a href="#cb2-84" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-85"><a href="#cb2-85" aria-hidden="true" tabindex="-1"></a>수식을 코드로 옮겨보면 이해가 확실해진다. Scaled dot-product attention 을 직접 구현해보자.</span>
-<span id="cb2-86"><a href="#cb2-86" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-89"><a href="#cb2-89" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
-<span id="cb2-90"><a href="#cb2-90" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: true</span></span>
-<span id="cb2-91"><a href="#cb2-91" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
-<span id="cb2-92"><a href="#cb2-92" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torch</span>
-<span id="cb2-93"><a href="#cb2-93" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torch.nn.functional <span class="im">as</span> F</span>
-<span id="cb2-94"><a href="#cb2-94" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-95"><a href="#cb2-95" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> scaled_dot_product_attention(Q, K, V, mask<span class="op">=</span><span class="va">None</span>):</span>
-<span id="cb2-96"><a href="#cb2-96" aria-hidden="true" tabindex="-1"></a>    d_k <span class="op">=</span> Q.size(<span class="op">-</span><span class="dv">1</span>)</span>
-<span id="cb2-97"><a href="#cb2-97" aria-hidden="true" tabindex="-1"></a>    scores <span class="op">=</span> Q <span class="op">@</span> K.transpose(<span class="op">-</span><span class="dv">2</span>, <span class="op">-</span><span class="dv">1</span>) <span class="op">/</span> (d_k <span class="op">**</span> <span class="fl">0.5</span>)</span>
-<span id="cb2-98"><a href="#cb2-98" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> mask <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>:</span>
-<span id="cb2-99"><a href="#cb2-99" aria-hidden="true" tabindex="-1"></a>        scores <span class="op">=</span> scores.masked_fill(mask <span class="op">==</span> <span class="dv">0</span>, <span class="bu">float</span>(<span class="st">"-inf"</span>))</span>
-<span id="cb2-100"><a href="#cb2-100" aria-hidden="true" tabindex="-1"></a>    weights <span class="op">=</span> F.softmax(scores, dim<span class="op">=-</span><span class="dv">1</span>)</span>
-<span id="cb2-101"><a href="#cb2-101" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> weights <span class="op">@</span> V, weights</span>
-<span id="cb2-102"><a href="#cb2-102" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb2-103"><a href="#cb2-103" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-104"><a href="#cb2-104" aria-hidden="true" tabindex="-1"></a>::: {.callout-tip}</span>
-<span id="cb2-105"><a href="#cb2-105" aria-hidden="true" tabindex="-1"></a><span class="in">`#| eval: false`</span> 로 두면 코드를 **실행하지 않고 표시만** 한다. <span class="in">`true`</span> 로 바꾸면 Quarto 가 렌더링 시 실제로 실행해서 출력·그래프까지 글에 넣어준다. 논문 재현 노트를 쓸 때 강력하다.</span>
-<span id="cb2-106"><a href="#cb2-106" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb2-107"><a href="#cb2-107" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-108"><a href="#cb2-108" aria-hidden="true" tabindex="-1"></a><span class="fu">## 결과 및 의의</span></span>
-<span id="cb2-109"><a href="#cb2-109" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-110"><a href="#cb2-110" aria-hidden="true" tabindex="-1"></a>WMT 2014 영어-독일어 번역에서 당시 SOTA 를 갱신했고, 학습 시간도 크게 줄였다. 이후 BERT, GPT 등 거의 모든 현대 LLM 의 근간이 되었다.</span>
-<span id="cb2-111"><a href="#cb2-111" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-112"><a href="#cb2-112" aria-hidden="true" tabindex="-1"></a><span class="fu">## 내 생각 / 남은 질문</span></span>
-<span id="cb2-113"><a href="#cb2-113" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-114"><a href="#cb2-114" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Positional encoding 을 sinusoidal 대신 learned 로 바꾸면 성능 차이가 얼마나 날까?</span>
-<span id="cb2-115"><a href="#cb2-115" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>$\sqrt{d_k}$ scaling 없이 layer norm 만으로 포화를 막을 수 있을지 실험해보고 싶다.</span>
-<span id="cb2-116"><a href="#cb2-116" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-117"><a href="#cb2-117" aria-hidden="true" tabindex="-1"></a>::: {.callout-important}</span>
-<span id="cb2-118"><a href="#cb2-118" aria-hidden="true" tabindex="-1"></a>다음에 읽을 것: BERT (Devlin et al., 2018) — 이 구조에서 인코더만 떼어내 어떻게 활용했는지.</span>
-<span id="cb2-119"><a href="#cb2-119" aria-hidden="true" tabindex="-1"></a>:::</span>
-</code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "Paper Review: Attention Is All You Need"</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="an">description:</span><span class="co"> "Transformer 아키텍처를 제안한 논문 리뷰. Self-attention의 수식과 구조를 정리한다."</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="an">date:</span><span class="co"> "2026-07-15"</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="an">categories:</span><span class="co"> [Transformer, NLP, Architecture]</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="an">reading-time:</span><span class="co"> true</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="an">toc:</span><span class="co"> true</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="an">jupyter:</span><span class="co"> python3</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="an">execute:</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co">  enabled: false             # 코드를 실행하지 않음(표시만) → jupyter 설치 불필요.</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="co">                             # 코드를 실제 실행하려면 이 줄을 true 로 바꾸고</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="co">                             # 로컬에 `pip install jupyter` 하세요.</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>::: callout-note</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="fu">## Paper info.</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>Vaswani, Ashish, et al. "Attention is all you need." *Advances in neural information processing systems* 30 (2017). <span class="co">[</span><span class="ot">arXiv:1706.03762</span><span class="co">](https://arxiv.org/abs/1706.03762)</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="fu">## Key Takeaway</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>RNN·CNN 없이 **오직 attention 만으로** 시퀀스를 처리하는 Transformer를 제안한 논문. 병렬화가 쉬워 학습이 빠르고, 장거리 의존성을 잘 잡는다.</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="fu">## Problem settings</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>기존 seq2seq 모델은 RNN 계열을 써서 토큰을 **순차적으로** 처리했다. 이 때문에</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a><span class="ss">1.  </span>시퀀스 길이에 비례해 계산이 직렬화되어 병렬화가 어렵고,</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a><span class="ss">2.  </span>멀리 떨어진 토큰 사이의 의존성을 학습하기 어렵다.</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a><span class="fu">## Core Idea: Scaled Dot-Product Attention</span></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>Query $Q$, Key $K$, Value $V$ 행렬에 대해 attention 은 다음과 같이 정의된다.</span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>$$\text{Attention}(Q, K, V) = \text{softmax}<span class="sc">\!</span>\left(\frac{QK^\top}{\sqrt{d_k}}\right)V$$</span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>여기서 $\sqrt{d_k}$ 로 나누는 것이 핵심인데, $d_k$ 가 커질수록 내적 값의 분산이 커져 softmax 가 포화(gradient 소실)되는 것을 막아준다.</span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>Multi-head attention 은 이를 $h$ 개의 독립된 부분공간에서 병렬로 수행한다.</span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>$$\text{MultiHead}(Q,K,V) = \text{Concat}(\text{head}_1, \dots, \text{head}_h)\,W^O$$</span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>$$\text{where}\quad \text{head}_i = \text{Attention}(QW_i^Q,\, KW_i^K,\, VW_i^V)$$</span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a><span class="fu">## Conclusion &amp; Contribution</span></span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a>WMT 2014 영어-독일어 번역에서 당시 SOTA 를 갱신했고, 학습 시간도 크게 줄였다. 이후 BERT, GPT 등 거의 모든 현대 LLM 의 근간이 되었다.</span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a><span class="fu">## Personal Thoughts</span></span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Positional encoding 을 sinusoidal 대신 learned 로 바꾸면 성능 차이가 얼마나 날까?</span>
+<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>$\sqrt{d_k}$ scaling 없이 layer norm 만으로 포화를 막을 수 있을지 실험해보고 싶다.</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 <footer class="footer">

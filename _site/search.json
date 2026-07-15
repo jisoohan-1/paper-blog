@@ -9,63 +9,63 @@
   {
     "objectID": "posts/2026-07-15-attention-is-all-you-need.html",
     "href": "posts/2026-07-15-attention-is-all-you-need.html",
-    "title": "Attention Is All You Need 정리",
+    "title": "Paper Review: Attention Is All You Need",
     "section": "",
-    "text": "RNN·CNN 없이 오직 attention 만으로 시퀀스를 처리하는 Transformer를 제안한 논문. 병렬화가 쉬워 학습이 빠르고, 장거리 의존성을 잘 잡는다.\n\n\n\n\n\n\nNote서지 정보\n\n\n\nVaswani et al., “Attention Is All You Need”, NeurIPS 2017. arXiv:1706.03762"
+    "text": "NotePaper info.\n\n\n\nVaswani, Ashish, et al. “Attention is all you need.” Advances in neural information processing systems 30 (2017). arXiv:1706.03762"
   },
   {
     "objectID": "posts/2026-07-15-attention-is-all-you-need.html#한-줄-요약",
     "href": "posts/2026-07-15-attention-is-all-you-need.html#한-줄-요약",
-    "title": "Attention Is All You Need 정리",
+    "title": "Paper Review: Attention Is All You Need",
     "section": "",
     "text": "RNN·CNN 없이 오직 attention 만으로 시퀀스를 처리하는 Transformer를 제안한 논문. 병렬화가 쉬워 학습이 빠르고, 장거리 의존성을 잘 잡는다.\n\n\n\n\n\n\nNote서지 정보\n\n\n\nVaswani et al., “Attention Is All You Need”, NeurIPS 2017. arXiv:1706.03762"
   },
   {
     "objectID": "posts/2026-07-15-attention-is-all-you-need.html#문제-상황",
     "href": "posts/2026-07-15-attention-is-all-you-need.html#문제-상황",
-    "title": "Attention Is All You Need 정리",
+    "title": "Paper Review: Attention Is All You Need",
     "section": "문제 상황",
     "text": "문제 상황\n기존 seq2seq 모델은 RNN 계열을 써서 토큰을 순차적으로 처리했다. 이 때문에\n\n시퀀스 길이에 비례해 계산이 직렬화되어 병렬화가 어렵고,\n멀리 떨어진 토큰 사이의 의존성을 학습하기 어렵다1."
   },
   {
     "objectID": "posts/2026-07-15-attention-is-all-you-need.html#핵심-아이디어-scaled-dot-product-attention",
     "href": "posts/2026-07-15-attention-is-all-you-need.html#핵심-아이디어-scaled-dot-product-attention",
-    "title": "Attention Is All You Need 정리",
+    "title": "Paper Review: Attention Is All You Need",
     "section": "핵심 아이디어: Scaled Dot-Product Attention",
-    "text": "핵심 아이디어: Scaled Dot-Product Attention\nQuery Q, Key K, Value V 행렬에 대해 attention 은 다음과 같이 정의된다.\n\n\\text{Attention}(Q, K, V) = \\text{softmax}\\!\\left(\\frac{QK^\\top}{\\sqrt{d_k}}\\right)V\n\n여기서 \\sqrt{d_k} 로 나누는 것이 핵심인데, d_k 가 커질수록 내적 값의 분산이 커져 softmax 가 포화(gradient 소실)되는 것을 막아준다.\nMulti-head attention 은 이를 h 개의 독립된 부분공간에서 병렬로 수행한다.\n\n\\text{MultiHead}(Q,K,V) = \\text{Concat}(\\text{head}_1, \\dots, \\text{head}_h)\\,W^O\n\n\n\\text{where}\\quad \\text{head}_i = \\text{Attention}(QW_i^Q,\\, KW_i^K,\\, VW_i^V)"
+    "text": "핵심 아이디어: Scaled Dot-Product Attention\nQuery Q, Key K, Value V 행렬에 대해 attention 은 다음과 같이 정의된다.\n\\text{Attention}(Q, K, V) = \\text{softmax}\\!\\left(\\frac{QK^\\top}{\\sqrt{d_k}}\\right)V\n여기서 \\sqrt{d_k} 로 나누는 것이 핵심인데, d_k 가 커질수록 내적 값의 분산이 커져 softmax 가 포화(gradient 소실)되는 것을 막아준다.\nMulti-head attention 은 이를 h 개의 독립된 부분공간에서 병렬로 수행한다.\n\\text{MultiHead}(Q,K,V) = \\text{Concat}(\\text{head}_1, \\dots, \\text{head}_h)\\,W^O\n\\text{where}\\quad \\text{head}_i = \\text{Attention}(QW_i^Q,\\, KW_i^K,\\, VW_i^V)"
   },
   {
     "objectID": "posts/2026-07-15-attention-is-all-you-need.html#전체-구조",
     "href": "posts/2026-07-15-attention-is-all-you-need.html#전체-구조",
-    "title": "Attention Is All You Need 정리",
+    "title": "Paper Review: Attention Is All You Need",
     "section": "전체 구조",
     "text": "전체 구조\n인코더-디코더 구조를 도식으로 정리하면 다음과 같다.\n\n\n\n\n\nflowchart TB\n    subgraph Encoder\n        E1[Input Embedding] --&gt; E2[+ Positional Encoding]\n        E2 --&gt; E3[Multi-Head Attention]\n        E3 --&gt; E4[Add & Norm]\n        E4 --&gt; E5[Feed Forward]\n        E5 --&gt; E6[Add & Norm]\n    end\n    subgraph Decoder\n        D1[Output Embedding] --&gt; D2[+ Positional Encoding]\n        D2 --&gt; D3[Masked Multi-Head Attention]\n        D3 --&gt; D4[Add & Norm]\n        D4 --&gt; D5[Cross Attention]\n        D5 --&gt; D6[Add & Norm]\n        D6 --&gt; D7[Feed Forward]\n        D7 --&gt; D8[Add & Norm]\n    end\n    E6 --&gt; D5\n    D8 --&gt; O[Linear + Softmax]"
   },
   {
     "objectID": "posts/2026-07-15-attention-is-all-you-need.html#구현으로-확인하기",
     "href": "posts/2026-07-15-attention-is-all-you-need.html#구현으로-확인하기",
-    "title": "Attention Is All You Need 정리",
+    "title": "Paper Review: Attention Is All You Need",
     "section": "구현으로 확인하기",
     "text": "구현으로 확인하기\n수식을 코드로 옮겨보면 이해가 확실해진다. Scaled dot-product attention 을 직접 구현해보자.\n\nimport torch\nimport torch.nn.functional as F\n\ndef scaled_dot_product_attention(Q, K, V, mask=None):\n    d_k = Q.size(-1)\n    scores = Q @ K.transpose(-2, -1) / (d_k ** 0.5)\n    if mask is not None:\n        scores = scores.masked_fill(mask == 0, float(\"-inf\"))\n    weights = F.softmax(scores, dim=-1)\n    return weights @ V, weights\n\n\n\n\n\n\n\nTip\n\n\n\n#| eval: false 로 두면 코드를 실행하지 않고 표시만 한다. true 로 바꾸면 Quarto 가 렌더링 시 실제로 실행해서 출력·그래프까지 글에 넣어준다. 논문 재현 노트를 쓸 때 강력하다."
   },
   {
     "objectID": "posts/2026-07-15-attention-is-all-you-need.html#결과-및-의의",
     "href": "posts/2026-07-15-attention-is-all-you-need.html#결과-및-의의",
-    "title": "Attention Is All You Need 정리",
+    "title": "Paper Review: Attention Is All You Need",
     "section": "결과 및 의의",
     "text": "결과 및 의의\nWMT 2014 영어-독일어 번역에서 당시 SOTA 를 갱신했고, 학습 시간도 크게 줄였다. 이후 BERT, GPT 등 거의 모든 현대 LLM 의 근간이 되었다."
   },
   {
     "objectID": "posts/2026-07-15-attention-is-all-you-need.html#내-생각-남은-질문",
     "href": "posts/2026-07-15-attention-is-all-you-need.html#내-생각-남은-질문",
-    "title": "Attention Is All You Need 정리",
+    "title": "Paper Review: Attention Is All You Need",
     "section": "내 생각 / 남은 질문",
-    "text": "내 생각 / 남은 질문\n\nPositional encoding 을 sinusoidal 대신 learned 로 바꾸면 성능 차이가 얼마나 날까?\n\\sqrt{d_k} scaling 없이 layer norm 만으로 포화를 막을 수 있을지 실험해보고 싶다.\n\n\n\n\n\n\n\nImportant\n\n\n\n다음에 읽을 것: BERT (Devlin et al., 2018) — 이 구조에서 인코더만 떼어내 어떻게 활용했는지."
+    "text": "내 생각 / 남은 질문\n\nPositional encoding 을 sinusoidal 대신 learned 로 바꾸면 성능 차이가 얼마나 날까?\n\\sqrt{d_k} scaling 없이 layer norm 만으로 포화를 막을 수 있을지 실험해보고 싶다."
   },
   {
     "objectID": "posts/2026-07-15-attention-is-all-you-need.html#footnotes",
     "href": "posts/2026-07-15-attention-is-all-you-need.html#footnotes",
-    "title": "Attention Is All You Need 정리",
+    "title": "Paper Review: Attention Is All You Need",
     "section": "Footnotes",
     "text": "Footnotes\n\n\n정보가 여러 스텝을 거치며 희석되기 때문. LSTM/GRU가 이를 완화했지만 근본적으로 해결하진 못했다.↩︎"
   },
@@ -74,6 +74,48 @@
     "href": "index.html",
     "title": "Paper Notes",
     "section": "",
-    "text": "읽은 논문들을 여기에 하나씩 정리합니다. 아래 목록에서 골라 읽어보세요.\n\n\n\n\n\n\n\n\n   \n    \n    \n      Order By\n      Default\n      \n        Title\n      \n      \n        Date - Oldest\n      \n      \n        Date - Newest\n      \n    \n  \n    \n      \n      \n    \n\n\n\n\n\nAttention Is All You Need 정리\n\n\n\nTransformer\n\nNLP\n\n아키텍처\n\n\n\nTransformer 아키텍처를 제안한 논문 리뷰. Self-attention의 수식과 구조를 정리한다.\n\n\n\n\n\nJul 15, 2026\n\n3 min\n\n\n\n\nNo matching items"
+    "text": "Order By\n      Default\n      \n        Title\n      \n      \n        Date - Oldest\n      \n      \n        Date - Newest\n      \n    \n  \n    \n      \n      \n    \n\n\n\n\n\nPaper Review: Attention Is All You Need\n\n\n\nTransformer\n\nNLP\n\nArchitecture\n\n\n\nTransformer 아키텍처를 제안한 논문 리뷰. Self-attention의 수식과 구조를 정리한다.\n\n\n\n\n\nJul 15, 2026\n\n1 min\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "posts/2026-07-15-attention-is-all-you-need.html#key-takeaway",
+    "href": "posts/2026-07-15-attention-is-all-you-need.html#key-takeaway",
+    "title": "Paper Review: Attention Is All You Need",
+    "section": "Key Takeaway",
+    "text": "Key Takeaway\nRNN·CNN 없이 오직 attention 만으로 시퀀스를 처리하는 Transformer를 제안한 논문. 병렬화가 쉬워 학습이 빠르고, 장거리 의존성을 잘 잡는다."
+  },
+  {
+    "objectID": "posts/2026-07-15-attention-is-all-you-need.html#problem-settings",
+    "href": "posts/2026-07-15-attention-is-all-you-need.html#problem-settings",
+    "title": "Paper Review: Attention Is All You Need",
+    "section": "Problem settings",
+    "text": "Problem settings\n기존 seq2seq 모델은 RNN 계열을 써서 토큰을 순차적으로 처리했다. 이 때문에\n\n시퀀스 길이에 비례해 계산이 직렬화되어 병렬화가 어렵고,\n멀리 떨어진 토큰 사이의 의존성을 학습하기 어렵다."
+  },
+  {
+    "objectID": "posts/2026-07-15-attention-is-all-you-need.html#core-idea-scaled-dot-product-attention",
+    "href": "posts/2026-07-15-attention-is-all-you-need.html#core-idea-scaled-dot-product-attention",
+    "title": "Paper Review: Attention Is All You Need",
+    "section": "Core Idea: Scaled Dot-Product Attention",
+    "text": "Core Idea: Scaled Dot-Product Attention\nQuery Q, Key K, Value V 행렬에 대해 attention 은 다음과 같이 정의된다.\n\\text{Attention}(Q, K, V) = \\text{softmax}\\!\\left(\\frac{QK^\\top}{\\sqrt{d_k}}\\right)V\n여기서 \\sqrt{d_k} 로 나누는 것이 핵심인데, d_k 가 커질수록 내적 값의 분산이 커져 softmax 가 포화(gradient 소실)되는 것을 막아준다.\nMulti-head attention 은 이를 h 개의 독립된 부분공간에서 병렬로 수행한다.\n\\text{MultiHead}(Q,K,V) = \\text{Concat}(\\text{head}_1, \\dots, \\text{head}_h)\\,W^O\n\\text{where}\\quad \\text{head}_i = \\text{Attention}(QW_i^Q,\\, KW_i^K,\\, VW_i^V)"
+  },
+  {
+    "objectID": "posts/2026-07-15-attention-is-all-you-need.html#implemetation",
+    "href": "posts/2026-07-15-attention-is-all-you-need.html#implemetation",
+    "title": "Paper Review: Attention Is All You Need",
+    "section": "Implemetation",
+    "text": "Implemetation\n\nimport torch\nimport torch.nn.functional as F\n\ndef scaled_dot_product_attention(Q, K, V, mask=None):\n    d_k = Q.size(-1)\n    scores = Q @ K.transpose(-2, -1) / (d_k ** 0.5)\n    if mask is not None:\n        scores = scores.masked_fill(mask == 0, float(\"-inf\"))\n    weights = F.softmax(scores, dim=-1)\n    return weights @ V, weights"
+  },
+  {
+    "objectID": "posts/2026-07-15-attention-is-all-you-need.html#conclusion-contribution",
+    "href": "posts/2026-07-15-attention-is-all-you-need.html#conclusion-contribution",
+    "title": "Paper Review: Attention Is All You Need",
+    "section": "Conclusion & Contribution",
+    "text": "Conclusion & Contribution\nWMT 2014 영어-독일어 번역에서 당시 SOTA 를 갱신했고, 학습 시간도 크게 줄였다. 이후 BERT, GPT 등 거의 모든 현대 LLM 의 근간이 되었다."
+  },
+  {
+    "objectID": "posts/2026-07-15-attention-is-all-you-need.html#personal-thoughts",
+    "href": "posts/2026-07-15-attention-is-all-you-need.html#personal-thoughts",
+    "title": "Paper Review: Attention Is All You Need",
+    "section": "Personal Thoughts",
+    "text": "Personal Thoughts\n\nPositional encoding 을 sinusoidal 대신 learned 로 바꾸면 성능 차이가 얼마나 날까?\n\\sqrt{d_k} scaling 없이 layer norm 만으로 포화를 막을 수 있을지 실험해보고 싶다."
   }
 ]
